@@ -1,0 +1,530 @@
+/* ============================================================
+   HH Goa ID 2026 Light Theme — Neo-Brutalist Design System
+   Inspired by https://hhgoa-id-2026.web.app/
+   Light off-white background (#fffbe8), dark emerald green (#0b6839),
+   neon pink (#ff0080), canary yellow (#fee101), black borders & offset shadows.
+   ============================================================ */
+
+/* ---------- Design Tokens ---------- */
+:root {
+  /* Brand Colors (hhgoa-id-2026 palette) */
+  --hh-offwhite: #fffbe8;
+  --hh-green: #0b6839;
+  --hh-green-deep: #073d22;
+  --hh-green-light: #108e4f;
+  --hh-pink: #ff0080;
+  --hh-pink-dim: rgba(255, 0, 128, 0.12);
+  --hh-yellow: #fee101;
+  --hh-yellow-dim: rgba(254, 225, 1, 0.25);
+  --hh-black: #000000;
+  --hh-white: #ffffff;
+  --hh-gray-light: #f3eed8;
+
+  /* Theme Surfaces (Light Mode) */
+  --bg-primary: #fffbe8;
+  --bg-section: #fffbe8;
+  --bg-card: #ffffff;
+  --bg-card-hover: #ffffff;
+  --border-default: #000000;
+  --border-hover: #000000;
+  --border-subtle: rgba(0, 0, 0, 0.12);
+
+  /* Text Colors */
+  --text-primary: #000000;
+  --text-secondary: #0b6839;
+  --text-muted: #55605a;
+  --text-on-yellow: #000000;
+  --text-on-green: #ffffff;
+  --text-on-pink: #ffffff;
+
+  /* Status */
+  --status-success: #16a34a;
+  --status-success-bg: rgba(22, 163, 74, 0.12);
+  --status-warning: #d97706;
+  --status-warning-bg: rgba(217, 119, 6, 0.12);
+  --status-error: #dc2626;
+  --status-error-bg: rgba(220, 38, 38, 0.12);
+
+  /* Typography */
+  --font-heading: 'Imbue', 'Georgia', serif;
+  --font-devanagari: 'Tiro Devanagari Hindi', 'Imbue', serif;
+  --font-mono: 'Victor Mono', 'JetBrains Mono', monospace;
+  --font-body: 'Inter', -apple-system, sans-serif;
+
+  /* Spacing & Radius */
+  --radius-none: 0px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --container-max: 1280px;
+  --section-pad: clamp(3rem, 6vw, 6rem);
+}
+
+/* ---------- Global Reset ---------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--hh-offwhite);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.65;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  /* Light Theme Grid Pattern matching hhgoa-id-2026 */
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  background-size: 4rem 4rem;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url('/background_ai.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Container ---------- */
+.container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 3vw, 2.5rem);
+  width: 100%;
+}
+
+/* ---------- Typography ---------- */
+.heading-display {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: clamp(3.2rem, 11vw, 8.5rem);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--hh-green);
+}
+
+.heading-section {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: clamp(2.2rem, 6vw, 4rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--hh-black);
+}
+
+.heading-card {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: clamp(1.3rem, 3vw, 2rem);
+  line-height: 1.1;
+  color: var(--hh-black);
+}
+
+.text-mono {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+.text-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--hh-green);
+}
+
+/* ---------- Section ---------- */
+.section {
+  padding: var(--section-pad) 0;
+  position: relative;
+}
+
+.section-green {
+  background: var(--hh-green);
+  color: var(--hh-white);
+  /* Dark Section Grid Pattern */
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 4rem 4rem;
+}
+
+.section-dark {
+  background: var(--hh-offwhite);
+}
+
+.section-divider {
+  width: 100%;
+  height: 3px;
+  background: var(--hh-black);
+  border: none;
+}
+
+/* ---------- Neo-Brutalist Cards ---------- */
+.card {
+  background: var(--hh-white);
+  border: 2px solid var(--hh-black);
+  box-shadow: 4px 4px 0px 0px var(--hh-black);
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px var(--hh-black);
+}
+
+.card-brutalist {
+  background: var(--hh-white);
+  border: 2px solid var(--hh-black);
+  box-shadow: 6px 6px 0px 0px var(--hh-black);
+  padding: 1.75rem;
+  transition: all 0.2s ease;
+}
+
+.card-brutalist:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 8px 8px 0px 0px var(--hh-black);
+}
+
+/* ---------- Buttons ---------- */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--hh-yellow);
+  color: var(--hh-black);
+  border: 2px solid var(--hh-black);
+  box-shadow: 4px 4px 0px 0px var(--hh-black);
+  padding: 0.85rem 2rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  background: var(--hh-black);
+  color: var(--hh-white);
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px var(--hh-black);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 4px 4px 0px 0px var(--hh-black);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--hh-white);
+  color: var(--hh-black);
+  border: 2px solid var(--hh-black);
+  box-shadow: 4px 4px 0px 0px var(--hh-black);
+  padding: 0.8rem 1.75rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-secondary:hover {
+  background: var(--hh-green);
+  color: var(--hh-white);
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px var(--hh-black);
+}
+
+.btn-pink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--hh-pink);
+  color: var(--hh-white);
+  border: 2px solid var(--hh-black);
+  box-shadow: 4px 4px 0px 0px var(--hh-black);
+  padding: 0.85rem 2rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-pink:hover {
+  background: var(--hh-black);
+  color: var(--hh-yellow);
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px var(--hh-black);
+}
+
+/* ---------- Badges & Pills ---------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1px solid var(--hh-black);
+  box-shadow: 2px 2px 0px 0px var(--hh-black);
+}
+
+.badge-success {
+  background: #dcfce7;
+  color: #15803d;
+  border-color: var(--hh-black);
+}
+
+.badge-warning {
+  background: #fef3c7;
+  color: #b45309;
+  border-color: var(--hh-black);
+}
+
+.badge-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: var(--hh-black);
+}
+
+.badge-pink {
+  background: var(--hh-pink-dim);
+  color: var(--hh-pink);
+  border-color: var(--hh-pink);
+}
+
+.badge-yellow {
+  background: var(--hh-yellow);
+  color: var(--hh-black);
+  border-color: var(--hh-black);
+}
+
+.badge-green {
+  background: var(--hh-green);
+  color: var(--hh-white);
+  border-color: var(--hh-black);
+}
+
+/* ---------- Marquee Ticker ---------- */
+.ticker-banner {
+  background: var(--hh-black);
+  color: var(--hh-yellow);
+  border-top: 2px solid var(--hh-black);
+  border-bottom: 2px solid var(--hh-black);
+  padding: 0.6rem 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.ticker-track {
+  display: inline-flex;
+  gap: 2rem;
+  animation: marquee 25s linear infinite;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ---------- Microphone Button ---------- */
+.mic-btn {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid var(--hh-black);
+  background: var(--hh-yellow);
+  color: var(--hh-black);
+  box-shadow: 6px 6px 0px 0px var(--hh-black);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.mic-btn:hover {
+  background: var(--hh-green);
+  color: var(--hh-white);
+  transform: translate(2px, 2px);
+  box-shadow: 4px 4px 0px 0px var(--hh-black);
+}
+
+.mic-btn.recording {
+  border-color: var(--hh-black);
+  background: var(--hh-pink);
+  color: var(--hh-white);
+  animation: mic-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes mic-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 0, 128, 0.4), 6px 6px 0px 0px var(--hh-black); }
+  50% { box-shadow: 0 0 0 20px rgba(255, 0, 128, 0), 6px 6px 0px 0px var(--hh-black); }
+}
+
+/* ---------- Navbar ---------- */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(255, 251, 232, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 2px solid var(--hh-black);
+  transition: all 0.3s ease;
+}
+
+.navbar-inner {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 3vw, 2.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.navbar-logo {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  color: var(--hh-green);
+  text-decoration: none;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+
+.navbar-link {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--hh-black);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.navbar-link:hover,
+.navbar-link.active {
+  color: var(--hh-pink);
+}
+
+/* ---------- Scroll Progress ---------- */
+.scroll-progress {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  height: 3px;
+  background: var(--hh-pink);
+  z-index: 99;
+  transform-origin: left;
+  will-change: transform;
+}
+
+/* ---------- Footer ---------- */
+.footer {
+  background: var(--hh-black);
+  color: var(--hh-white);
+  border-top: 3px solid var(--hh-black);
+  padding: 3.5rem 0 2rem;
+}
+
+.footer-inner {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 3vw, 2.5rem);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+/* ---------- Waveform Bars ---------- */
+.waveform-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 40px;
+}
+
+.waveform-bar {
+  width: 4px;
+  background: var(--hh-pink);
+  border-radius: 2px;
+  transition: height 0.1s ease;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .navbar-links { display: none; }
+  .navbar-mobile-toggle { display: block; }
+  .mic-btn { width: 95px; height: 95px; }
+  .heading-display { font-size: clamp(2.2rem, 11vw, 4.5rem); }
+}
+
+@media (min-width: 769px) {
+  .navbar-mobile-toggle { display: none; }
+}
