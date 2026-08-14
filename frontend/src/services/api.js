@@ -20,10 +20,10 @@ async function callGeminiDirectly(query, language = 'en') {
 
   const isoLang = (language || 'en').split('-')[0].toLowerCase();
   const langPrompts = {
-    hi: 'उत्तर शुद्ध, स्वाभाविक और स्पष्ट हिंदी (Devanagari script) में दें। उत्तर 2 से 4 वाक्यों में सटीक और तथ्यात्मक होना चाहिए।',
-    kn: 'ಉತ್ತರವನ್ನು ನಿಖರವಾದ ಮತ್ತು ಸ್ಪಷ್ಟವಾದ ಕನ್ನಡದಲ್ಲಿ ನೀಡಿ. 2 ರಿಂದ 4 ವಾಕ್ಯಗಳಲ್ಲಿ ನಿಖರ ಮಾಹಿತಿ ಇರಬೇಕು.',
-    mr: 'उत्तर अचूक आणि स्पष्ट मराठीत (Devanagari script) द्या. उत्तर 2 ते 4 वाक्यांत माहितीपूर्ण असावे.',
-    en: 'Provide a direct, factual, and accurate answer in 2 to 4 concise sentences.',
+    hi: 'उत्तर पूर्ण, शुद्ध, स्वाभाविक और स्पष्ट हिंदी (Devanagari script) में दें। उत्तर संपूर्ण, समृद्ध और तथ्यात्मक होना चाहिए और कभी भी अधूरा नहीं कटना चाहिए।',
+    kn: 'ಉತ್ತರವನ್ನು ಸಂಪೂರ್ಣ, ನಿಖರ ಮತ್ತು ಸ್ಪಷ್ಟ ಕನ್ನಡದಲ್ಲಿ ನೀಡಿ. ಉತ್ತರವು ವಿವರಣಾತ್ಮಕವಾಗಿರಬೇಕು ಮತ್ತು ಅಪೂರ್ಣವಾಗಿರಬಾರದು.',
+    mr: 'उत्तर पूर्ण, अचूक आणि स्पष्ट मराठीत (Devanagari script) द्या. उत्तर माहितीपूर्ण, परिपूर्ण आणि अखंड असावे.',
+    en: 'Provide a complete, comprehensive, factual, and well-explained answer. Ensure the answer is fully formed, clearly articulated, and never cut off.',
   };
 
   const instruction = langPrompts[isoLang] || langPrompts.en;
@@ -37,14 +37,14 @@ async function callGeminiDirectly(query, language = 'en') {
           {
             parts: [
               {
-                text: `You are a factual, concise multilingual RAG assistant for HH Goa 2026.\n\n${instruction}\n\nUser Question: ${query}\n\nAnswer:`
+                text: `You are an expert multilingual AI assistant for HH Goa 2026.\n\n${instruction}\n\nUser Question: ${query}\n\nComplete Answer:`
               }
             ]
           }
         ],
         generationConfig: {
-          temperature: 0.2,
-          maxOutputTokens: 350,
+          temperature: 0.3,
+          maxOutputTokens: 1024,
         }
       };
 

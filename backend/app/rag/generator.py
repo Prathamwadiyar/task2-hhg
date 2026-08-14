@@ -63,11 +63,12 @@ class GroundedLLMGenerator:
                 genai.configure(api_key=self.gemini_api_key)
                 
                 candidate_models = ["gemini-3-flash-preview", "gemini-3.1-flash-lite", "gemini-3.5-flash", "gemini-flash-latest"]
+                cfg = genai.GenerationConfig(max_output_tokens=1024, temperature=0.3)
                 for model_name in candidate_models:
                     try:
                         model = genai.GenerativeModel(model_name)
                         prompt = f"{SYSTEM_GROUNDING_PROMPT}\n\nRetrieved Context:\n{context_str}\n\nUser Query: {query}"
-                        response = model.generate_content(prompt)
+                        response = model.generate_content(prompt, generation_config=cfg)
                         if response and response.text:
                             return response.text.strip()
                     except Exception as inner_e:
