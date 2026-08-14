@@ -10,16 +10,31 @@ import { AnswerPanel } from './components/AnswerPanel';
 import { SourcesGrid } from './components/SourcesGrid';
 import { ProcessingPipeline } from './components/ProcessingPipeline';
 import { LatencyDashboard } from './components/LatencyDashboard';
+import { ExplanationPage } from './components/ExplanationPage';
 import { Footer } from './components/Footer';
 import { ScrollProgress } from './components/common/ScrollProgress';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export function App() {
+  const [view, setView] = useState(() => (window.location.hash === '#explanation' ? 'explanation' : 'main'));
   const [result, setResult] = useState(null);
   const [pipelineStage, setPipelineStage] = useState(null);
   const [benchmarkData, setBenchmarkData] = useState(null);
   const lenisRef = useRef(null);
+
+  /* ---- Sync hash route changes ---- */
+  useEffect(() => {
+    const handleHashChange = () => {
+      if (window.location.hash === '#explanation') {
+        setView('explanation');
+      } else {
+        setView('main');
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   /* ---- Lenis smooth scroll ---- */
   useEffect(() => {
@@ -44,7 +59,7 @@ export function App() {
       lenis.destroy();
       gsap.ticker.remove(lenis.raf);
     };
-  }, []);
+  }, [view]);
 
   /* ---- Load benchmark data on mount ---- */
   useEffect(() => {
@@ -56,7 +71,6 @@ export function App() {
           setBenchmarkData(data);
         }
       } catch (e) {
-        // Benchmark data not available yet — silently ignore
         console.log('Benchmark data not yet available');
       }
     };
@@ -67,55 +81,89 @@ export function App() {
   const handleResult = useCallback((data) => {
     setResult(data);
     setPipelineStage('answer');
-    // Scroll to answer after short delay
+    // Keep voice card in view
     setTimeout(() => {
-      const answerEl = document.getElementById('answer-section');
-      if (answerEl) answerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 200);
+      const voiceEl = document.getElementById('voice');
+      if (voiceEl) voiceEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }, []);
+
+  const handleResetQuery = useCallback(() => {
+    setResult(null);
+    setPipelineStage(null);
   }, []);
 
   /* ---- Navigation helpers ---- */
-  const scrollToVoice = useCallback(() => {
-    const el = document.getElementById('voice');
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const navigateToExplanation = useCallback(() => {
+    window.location.hash = 'explanation';
+    setView('explanation');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  const scrollToPipeline = useCallback(() => {
-    const el = document.getElementById('pipeline');
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const navigateToMain = useCallback(() => {
+    window.location.hash = '';
+    setView('main');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
+
+  const scrollToVoice = useCallback(() => {
+    if (view !== 'main') setView('main');
+    setTimeout(() => {
+      const el = document.getElementById('voice');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }, [view]);
+
+  const scrollToPipeline = useCallback(() => {
+    if (view !== 'main') setView('main');
+    setTimeout(() => {
+      const el = document.getElementById('pipeline');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }, [view]);
 
   return (
     <>
-      <Navbar />
+      <Navbar currentView={view} onNavigate={(v) => (v === 'explanation' ? navigateToExplanation() : navigateToMain())} />
       <ScrollProgress />
 
-      <main>
-        <Hero onTryVoice={scrollToVoice} onExploreArch={scrollToPipeline} />
+      {view === 'explanation' ? (
+        <main>
+          <ExplanationPage onBack={navigateToMain} currentResult={result} />
+        </main>
+      ) : (
+        <main>
+          <Hero onTryVoice={scrollToVoice} onExploreArch={scrollToPipeline} />
 
-        <hr className="section-divider" />
+          <hr className="section-divider" />
 
-        <VoiceInterface onResult={handleResult} />
+          <VoiceInterface
+            result={result}
+            onResult={handleResult}
+            onReset={handleResetQuery}
+            onExplain={navigateToExplanation}
+          />
 
-        <div id="answer-section">
-          <AnswerPanel result={result} />
-        </div>
+          <div id="answer-section">
+            <AnswerPanel result={result} onExplain={navigateToExplanation} />
+          </div>
 
-        {result?.sources?.length > 0 && (
-          <SourcesGrid sources={result.sources} />
-        )}
+          {result?.sources?.length > 0 && (
+            <SourcesGrid sources={result.sources} />
+          )}
 
-        <hr className="section-divider" />
+          <hr className="section-divider" />
 
-        <ProcessingPipeline activeStage={pipelineStage} />
+          <ProcessingPipeline activeStage={pipelineStage} />
 
-        <hr className="section-divider" />
+          <hr className="section-divider" />
 
-        <LatencyDashboard
-          latency={result?.latency}
-          benchmarkData={benchmarkData}
-        />
-      </main>
+          <LatencyDashboard
+            latency={result?.latency}
+            benchmarkData={benchmarkData}
+          />
+        </main>
+      )}
 
       <Footer />
     </>

@@ -67,7 +67,7 @@ export async function queryText(queryTextStr, language = 'en', topK = 5, enableH
 /**
  * POST /api/voice/query - Submit voice audio RAG query.
  */
-export async function queryVoice(audioFile, languageCode = 'hi-IN') {
+export async function queryVoice(audioFile, languageCode = 'en-IN') {
   const formData = new FormData();
   if (audioFile) {
     formData.append('file', audioFile);

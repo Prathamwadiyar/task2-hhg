@@ -24,7 +24,7 @@ class SarvamSpeechClient:
     async def transcribe_audio(
         self,
         audio_bytes: bytes,
-        language_code: str = "hi-IN",
+        language_code: str = "en-IN",
         filename: str = "input_audio.wav",
     ) -> str:
         """Transcribe Indic audio bytes to text using Sarvam STT REST API."""
@@ -57,10 +57,9 @@ class SarvamSpeechClient:
                 headers = {"api-subscription-key": api_key}
                 files = {"file": (filename, audio_bytes, content_type)}
                 data = {
-                    "model": "saaras:v3",
+                    "model": "saarika:v2.5",
                     "language_code": language_code,
                     "with_timestamps": "false",
-                    "mode": "transcribe",
                 }
 
                 async with httpx.AsyncClient(timeout=15.0) as client:
@@ -93,6 +92,10 @@ class SarvamSpeechClient:
 
         if language_code.startswith("hi"):
             return "कॉरपोरेशन क्या है?"
+        elif language_code.startswith("kn"):
+            return "ಕಾರ್ಪೊರೇಷನ್ ಎಂದರೇನು?"
+        elif language_code.startswith("mr"):
+            return "कॉरपोरेशन म्हणजे काय?"
         return "What is a corporation?"
 
 

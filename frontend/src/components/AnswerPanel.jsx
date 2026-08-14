@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 
-export function AnswerPanel({ result }) {
+export function AnswerPanel({ result, onExplain }) {
   const panelRef = useRef(null);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ export function AnswerPanel({ result }) {
     <section className="section section-dark" ref={panelRef}>
       <div className="container">
         <div style={{ maxWidth: '850px', margin: '0 auto' }}>
-          
+
           {/* Transcript */}
           {transcription && (
             <div style={{ marginBottom: '1.5rem' }}>
@@ -69,6 +69,53 @@ export function AnswerPanel({ result }) {
                 ⚠ INSUFFICIENT EVIDENCE &nbsp;·&nbsp; Relying on General Knowledge Fallback
               </div>
             )}
+          </div>
+
+          {/* Post-RAG Process Breakdown Callout Banner */}
+          <div style={{
+            marginTop: '1.75rem',
+            background: 'linear-gradient(135deg, #073d22 0%, #0b6839 100%)',
+            border: '2.5px solid #000000',
+            boxShadow: '6px 6px 0px #000000',
+            borderRadius: '12px',
+            padding: '1.25rem 1.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '1rem',
+          }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <span style={{ color: 'var(--hh-yellow)', fontSize: '1.1rem' }}>✦</span>
+                <span style={{ fontFamily: 'var(--font-heading)', color: 'var(--hh-yellow)', fontSize: '1.3rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.02em' }}>
+                  UNDERSTAND HOW THIS WAS GENERATED
+                </span>
+                <span className="badge badge-pink" style={{ fontSize: '9px', padding: '0.1rem 0.4rem' }}>INTERACTIVE</span>
+              </div>
+              <p style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: '#e2e8f0', marginTop: '0.3rem', maxWidth: '520px' }}>
+                Explore the step-by-step visual flowchart showing how your query was transcribed, embedded, retrieved from Qdrant, and synthesized.
+              </p>
+            </div>
+
+            <button
+              className="btn-primary"
+              onClick={onExplain}
+              style={{
+                background: 'var(--hh-yellow)',
+                color: '#000000',
+                fontSize: '12px',
+                padding: '0.7rem 1.4rem',
+                boxShadow: '3px 3px 0px #000000',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                fontWeight: 800,
+              }}
+            >
+              <span>EXPLAIN PROCESS</span>
+              <span>→</span>
+            </button>
           </div>
 
         </div>

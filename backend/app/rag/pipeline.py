@@ -134,7 +134,7 @@ class RAGPipeline:
     async def run_voice_query(
         self,
         audio_bytes: bytes,
-        language_code: str = "hi-IN",
+        language_code: str = "en-IN",
         top_k: int = 5,
         filename: str = "input_audio.webm",
         request_id: str = "REQ-VOICE-001",

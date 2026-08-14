@@ -13,7 +13,7 @@ async def handle_voice_query(
     http_request: Request,
     file: Optional[UploadFile] = File(None),
     audio_base64: Optional[str] = Form(None),
-    language_code: str = Form("hi-IN"),
+    language_code: str = Form("en-IN"),
     top_k: int = Form(5),
 ) -> RAGResponse:
     """Execute voice-based RAG query pipeline via Sarvam STT and return transcript, grounded answer, sources, and telemetry."""

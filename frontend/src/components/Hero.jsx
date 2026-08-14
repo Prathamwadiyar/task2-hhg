@@ -38,8 +38,8 @@ export function Hero({ onTryVoice, onExploreArch }) {
 
       <div className="container">
         
-        {/* Top Official Pill Badge */}
-        <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+        {/* Top Official Pill Badges including 2:47PM STUDIO */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
           <span style={{
             display: 'inline-block',
             padding: '0.35rem 1rem',
@@ -55,52 +55,40 @@ export function Hero({ onTryVoice, onExploreArch }) {
           }}>
             OFFICIAL HH GOA 2026 · TASK 2 DIGITAL ACTIVATION
           </span>
+
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            padding: '0.35rem 1rem',
+            background: 'var(--hh-yellow)',
+            color: 'var(--hh-black)',
+            border: '1.5px solid var(--hh-black)',
+            borderRadius: '999px',
+            boxShadow: '2px 2px 0px #000000',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '11px',
+            fontWeight: 800,
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+          }}>
+            <span style={{ color: 'var(--hh-pink)' }}>★</span> 2:47PM STUDIO
+          </span>
         </div>
 
         {/* Hero Title & Identity Container */}
-        <div ref={titleRef} style={{ textAlign: 'center', position: 'relative', margin: '1rem 0 2rem' }}>
+        <div ref={titleRef} style={{ textAlign: 'center', position: 'relative', margin: '0.5rem 0 2rem' }}>
           
-          {/* Main Display Title with Devanagari Pink Sticker Badge */}
-          <h1 style={{
-            fontFamily: 'var(--font-heading)',
-            fontSize: 'clamp(3.5rem, 12vw, 9rem)',
-            fontWeight: 900,
-            lineHeight: 0.88,
-            color: 'var(--hh-green)',
-            textTransform: 'uppercase',
-            letterSpacing: '-0.02em',
-            position: 'relative',
-            display: 'inline-block',
-            margin: '0 auto',
-          }}>
-            HACKER{' '}
-            <span style={{
-              display: 'inline-block',
-              position: 'relative',
-              margin: '0 0.1em',
-              verticalAlign: 'middle',
-            }}>
-              {/* Pink Devanagari Badge */}
-              <span style={{
-                fontFamily: 'var(--font-devanagari)',
-                background: 'var(--hh-pink)',
-                color: '#ffffff',
-                fontSize: '0.42em',
-                padding: '0.12em 0.4em',
-                borderRadius: '999px',
-                border: '3px solid #000000',
-                boxShadow: '4px 4px 0px #000000',
-                display: 'inline-block',
-                transform: 'rotate(-6deg) translateY(-0.15em)',
-                lineHeight: 1.1,
-                fontWeight: 700,
-                textTransform: 'none',
-              }}>
+          {/* Smooth & Sexy Hacker House Goa Container matching reference image */}
+          <div className="hero-title-container">
+            <h1 className="hero-original-title">
+              <span>HACKER</span>
+              <span className="devanagari-goa-overlay" title="Goa in Hindi">
                 गोवा
               </span>
-            </span>
-            HOUSE
-          </h1>
+              <span>HOUSE</span>
+            </h1>
+          </div>
 
           {/* Subheading */}
           <div style={{

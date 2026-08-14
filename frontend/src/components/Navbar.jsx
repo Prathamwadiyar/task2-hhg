@@ -8,7 +8,7 @@ const NAV_ITEMS = [
   { id: 'evaluation', label: 'Evaluation' },
 ];
 
-export function Navbar() {
+export function Navbar({ currentView = 'main', onNavigate }) {
   const [activeSection, setActiveSection] = useState('hero');
   const [mobileOpen, setMobileOpen] = useState(false);
   const navRef = useRef(null);
@@ -18,6 +18,7 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
+    if (currentView !== 'main') return;
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -31,10 +32,24 @@ export function Navbar() {
       if (el) observer.observe(el);
     });
     return () => observer.disconnect();
-  }, []);
+  }, [currentView]);
 
-  const scrollTo = (id) => {
+  const handleNavClick = (id) => {
     setMobileOpen(false);
+    if (id === 'explanation') {
+      if (onNavigate) onNavigate('explanation');
+      return;
+    }
+
+    if (currentView !== 'main') {
+      if (onNavigate) onNavigate('main');
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+      return;
+    }
+
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
@@ -43,22 +58,39 @@ export function Navbar() {
     <nav ref={navRef} className="navbar" role="navigation" aria-label="Main">
       <div className="navbar-inner">
         {/* Brand Logo */}
-        <a className="navbar-logo" href="#hero" onClick={(e) => { e.preventDefault(); scrollTo('hero'); }} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', textDecoration: 'none' }}>
-          <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, color: 'var(--hh-green)', fontSize: '1.4rem', letterSpacing: '-0.01em' }}>
-            HACKER HOUSE
+        <a className="navbar-logo" href="#hero" onClick={(e) => { e.preventDefault(); handleNavClick('hero'); }} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', textDecoration: 'none' }}>
+          <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, color: 'var(--hh-green)', fontSize: '1.35rem', letterSpacing: '-0.01em' }}>
+            HACKER
           </span>
           <span style={{
             fontFamily: 'var(--font-devanagari)',
-            background: 'var(--hh-pink)',
-            color: '#ffffff',
-            fontSize: '0.7rem',
-            padding: '0.05rem 0.35rem',
-            borderRadius: '999px',
-            border: '2px solid #000000',
-            fontWeight: 700,
-            lineHeight: 1.1,
+            color: 'var(--hh-pink)',
+            fontSize: '1rem',
+            fontWeight: 900,
+            transform: 'rotate(-6deg)',
+            display: 'inline-block',
+            lineHeight: 1,
+            textShadow: '-1px -1px 0 #fee101, 1px -1px 0 #fee101, -1px 1px 0 #fee101, 1px 1px 0 #fee101, 2px 2px 0px #000',
           }}>
             गोवा
+          </span>
+          <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, color: 'var(--hh-green)', fontSize: '1.35rem', letterSpacing: '-0.01em' }}>
+            HOUSE
+          </span>
+          <span style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '9px',
+            fontWeight: 800,
+            background: 'var(--hh-yellow)',
+            color: 'var(--hh-black)',
+            padding: '0.15rem 0.4rem',
+            border: '1px solid var(--hh-black)',
+            boxShadow: '1.5px 1.5px 0px #000',
+            borderRadius: '3px',
+            marginLeft: '0.3rem',
+            letterSpacing: '0.05em'
+          }}>
+            2:47PM STUDIO
           </span>
         </a>
 
@@ -67,29 +99,56 @@ export function Navbar() {
           {NAV_ITEMS.map(({ id, label }) => (
             <li key={id}>
               <button
-                className={`navbar-link ${activeSection === id ? 'active' : ''}`}
-                onClick={() => scrollTo(id)}
+                className={`navbar-link ${currentView === 'main' && activeSection === id ? 'active' : ''}`}
+                onClick={() => handleNavClick(id)}
               >
                 {label}
               </button>
             </li>
           ))}
+          <li>
+            <button
+              className={`navbar-link ${currentView === 'explanation' ? 'active' : ''}`}
+              onClick={() => handleNavClick('explanation')}
+              style={{
+                color: currentView === 'explanation' ? 'var(--hh-pink)' : 'var(--hh-black)',
+                fontWeight: 800,
+              }}
+            >
+              ✦ Explainer
+            </button>
+          </li>
         </ul>
 
-        {/* Right CTA Button matching hhgoa-id-2026 */}
+        {/* Right CTA Button */}
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-          <button
-            className="btn-primary"
-            onClick={() => scrollTo('voice')}
-            style={{
-              padding: '0.45rem 1.1rem',
-              fontSize: '12px',
-              background: 'var(--hh-green)',
-              color: '#ffffff',
-            }}
-          >
-            TRY RAG
-          </button>
+          {currentView === 'explanation' ? (
+            <button
+              className="btn-primary"
+              onClick={() => handleNavClick('voice')}
+              style={{
+                padding: '0.45rem 1.1rem',
+                fontSize: '12px',
+                background: 'var(--hh-yellow)',
+                color: 'var(--hh-black)',
+              }}
+            >
+              ← LIVE APP
+            </button>
+          ) : (
+            <button
+              className="btn-primary"
+              onClick={() => handleNavClick('voice')}
+              style={{
+                padding: '0.45rem 1.1rem',
+                fontSize: '12px',
+                background: 'var(--hh-green)',
+                color: '#ffffff',
+              }}
+            >
+              TRY RAG
+            </button>
+          )}
           
           <button
             className="navbar-mobile-toggle"
@@ -107,13 +166,20 @@ export function Navbar() {
           {NAV_ITEMS.map(({ id, label }) => (
             <button
               key={id}
-              className={`navbar-link ${activeSection === id ? 'active' : ''}`}
-              onClick={() => scrollTo(id)}
+              className={`navbar-link ${currentView === 'main' && activeSection === id ? 'active' : ''}`}
+              onClick={() => handleNavClick(id)}
               style={{ display: 'block', padding: '0.75rem 0', width: '100%', textAlign: 'left', fontSize: '14px' }}
             >
               {label}
             </button>
           ))}
+          <button
+            className={`navbar-link ${currentView === 'explanation' ? 'active' : ''}`}
+            onClick={() => handleNavClick('explanation')}
+            style={{ display: 'block', padding: '0.75rem 0', width: '100%', textAlign: 'left', fontSize: '14px', color: 'var(--hh-pink)', fontWeight: 800 }}
+          >
+            ✦ Process Explainer
+          </button>
         </div>
       )}
     </nav>

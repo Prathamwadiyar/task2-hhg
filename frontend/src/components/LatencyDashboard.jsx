@@ -75,7 +75,7 @@ export function LatencyDashboard({ latency, benchmarkData }) {
         </div>
 
         {/* Tab Controls for Analytical Sections */}
-        <div style={{ display: 'flex', borderBottom: '2px solid #000', marginBottom: '2rem', background: 'var(--hh-gray-light)' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', borderBottom: '2px solid #000', marginBottom: '2rem', background: 'var(--hh-gray-light)' }}>
           {[
             { id: 'percentiles', label: '📊 LATENCY PERCENTILES (P50/P70/P100)' },
             { id: 'comparison', label: '⚡ CHUNKING STRATEGY COMPARISON' },
@@ -85,7 +85,7 @@ export function LatencyDashboard({ latency, benchmarkData }) {
               key={id}
               onClick={() => setActiveTab(id)}
               style={{
-                flex: 1,
+                flex: '1 1 200px',
                 padding: '0.85rem 1rem',
                 border: 'none',
                 borderRight: '2px solid #000',
@@ -95,7 +95,7 @@ export function LatencyDashboard({ latency, benchmarkData }) {
                 fontSize: '12px',
                 fontWeight: 800,
                 cursor: 'pointer',
-                borderBottom: activeTab === id ? '3px solid var(--hh-pink)' : 'none',
+                borderBottom: activeTab === id ? '3px solid var(--hh-pink)' : '2px solid #000',
                 transition: 'all 0.15s ease',
               }}
             >

@@ -92,6 +92,9 @@ class GroundedLLMGenerator:
         if any(sig in lower_query for sig in injection_signals):
             return self.INSUFFICIENT_CONTEXT_MSG
 
+        if not sources:
+            return self.INSUFFICIENT_CONTEXT_MSG
+
         # Extract top scoring source passage
         top_source = sources[0]
         

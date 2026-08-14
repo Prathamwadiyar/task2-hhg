@@ -5,21 +5,38 @@ export function Footer() {
     <footer className="footer">
       <div className="footer-inner">
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
             <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.4rem', color: 'var(--hh-yellow)', textTransform: 'uppercase' }}>
-              HACKER HOUSE
+              HACKER
             </span>
             <span style={{
               fontFamily: 'var(--font-devanagari)',
-              background: 'var(--hh-pink)',
-              color: '#ffffff',
-              fontSize: '0.7rem',
-              padding: '0.05rem 0.35rem',
-              borderRadius: '999px',
-              border: '2px solid #ffffff',
-              fontWeight: 700,
+              color: 'var(--hh-pink)',
+              fontSize: '1rem',
+              fontWeight: 900,
+              transform: 'rotate(-6deg)',
+              display: 'inline-block',
+              lineHeight: 1,
+              textShadow: '-1px -1px 0 #fee101, 1px -1px 0 #fee101, -1px 1px 0 #fee101, 1px 1px 0 #fee101, 2px 2px 0px #000',
             }}>
               गोवा
+            </span>
+            <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.4rem', color: 'var(--hh-yellow)', textTransform: 'uppercase' }}>
+              HOUSE
+            </span>
+            <span style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '9px',
+              fontWeight: 800,
+              background: 'var(--hh-pink)',
+              color: '#ffffff',
+              padding: '0.15rem 0.4rem',
+              border: '1px solid #ffffff',
+              borderRadius: '3px',
+              marginLeft: '0.3rem',
+              letterSpacing: '0.05em'
+            }}>
+              2:47PM STUDIO
             </span>
           </div>
           <div className="text-mono" style={{ color: '#a0aec0', marginTop: '0.35rem', fontSize: '12px' }}>
@@ -50,8 +67,12 @@ export function Footer() {
       </div>
 
       <div style={{ maxWidth: 'var(--container-max)', margin: '2rem auto 0', padding: '1.5rem clamp(1rem, 3vw, 2.5rem) 0', borderTop: '1px solid #333' }}>
-        <div className="text-mono" style={{ color: '#a0aec0', fontSize: '11px', textAlign: 'center' }}>
-          Built for Hacker House Goa 2026 Shortlisting Task 2 · Production Voice RAG Model
+        <div className="text-mono" style={{ color: '#a0aec0', fontSize: '11px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <span>Crafted by <strong style={{ color: 'var(--hh-yellow)' }}>2:47PM STUDIO</strong></span>
+          <span>·</span>
+          <span>Built for Hacker House Goa 2026 Shortlisting Task 2</span>
+          <span>·</span>
+          <span>Production Voice RAG Model</span>
         </div>
       </div>
     </footer>
