@@ -62,22 +62,16 @@ class GroundedLLMGenerator:
                 import google.generativeai as genai
                 genai.configure(api_key=self.gemini_api_key)
                 
-                model_name = getattr(self.settings, "LLM_MODEL", "gemini-flash-latest")
-                if model_name == "gemini-1.5-flash":
-                    model_name = "gemini-flash-latest"
-
-                try:
-                    model = genai.GenerativeModel(model_name)
-                    prompt = f"{SYSTEM_GROUNDING_PROMPT}\n\nRetrieved Context:\n{context_str}\n\nUser Query: {query}"
-                    response = model.generate_content(prompt)
-                    return response.text.strip()
-                except Exception as inner_e:
-                    # Fallback to gemini-flash-latest if specific model name failed
-                    logger.warning(f"Gemini model {model_name} failed ({inner_e}). Trying gemini-flash-latest fallback...")
-                    model = genai.GenerativeModel("gemini-flash-latest")
-                    prompt = f"{SYSTEM_GROUNDING_PROMPT}\n\nRetrieved Context:\n{context_str}\n\nUser Query: {query}"
-                    response = model.generate_content(prompt)
-                    return response.text.strip()
+                candidate_models = ["gemini-3-flash-preview", "gemini-3.1-flash-lite", "gemini-3.5-flash", "gemini-flash-latest"]
+                for model_name in candidate_models:
+                    try:
+                        model = genai.GenerativeModel(model_name)
+                        prompt = f"{SYSTEM_GROUNDING_PROMPT}\n\nRetrieved Context:\n{context_str}\n\nUser Query: {query}"
+                        response = model.generate_content(prompt)
+                        if response and response.text:
+                            return response.text.strip()
+                    except Exception as inner_e:
+                        logger.warning(f"Gemini model {model_name} failed ({inner_e}). Trying next candidate...")
             except Exception as e:
                 logger.error(f"Gemini generation failed: {e}. Falling back to grounded synthesizer.")
 
