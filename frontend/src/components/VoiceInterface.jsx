@@ -130,18 +130,18 @@ export function VoiceInterface({ result, onResult, onReset, onExplain }) {
     const audioFile = new File([audioBlob], 'recording.webm', { type: 'audio/webm' });
     try {
       setStage('retrieving');
-      let resultRes = await queryVoice(audioFile, language);
+      const spokenTranscript = speechTranscriptRef.current?.trim();
+      let resultRes = null;
 
-      if (typeof resultRes === 'object' && resultRes !== null) {
-        const isFallback = !resultRes.transcription || resultRes.transcription === 'कॉरपोरेशन क्या है?' || resultRes.transcription === 'What is a corporation?';
-        if (isFallback && speechTranscriptRef.current) {
-          const isoLang = language.split('-')[0].toLowerCase();
-          const textRes = await queryText(speechTranscriptRef.current, isoLang);
-          if (typeof textRes === 'object' && textRes !== null) {
-            resultRes = textRes;
-            resultRes.transcription = speechTranscriptRef.current;
-          }
+      if (spokenTranscript) {
+        const isoLang = language.split('-')[0].toLowerCase();
+        resultRes = await queryText(spokenTranscript, isoLang);
+        if (typeof resultRes === 'object' && resultRes !== null) {
+          resultRes.transcription = spokenTranscript;
+          resultRes.query = spokenTranscript;
         }
+      } else {
+        resultRes = await queryVoice(audioFile, language);
       }
 
       setStage('generating');
