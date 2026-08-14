@@ -38,9 +38,23 @@ export function Footer() {
             }}>
               2:47PM STUDIO
             </span>
+            <span style={{
+              fontFamily: 'var(--font-heading)',
+              fontSize: '10px',
+              fontWeight: 900,
+              background: 'var(--hh-yellow)',
+              color: 'var(--hh-black)',
+              padding: '0.15rem 0.45rem',
+              border: '1px solid var(--hh-black)',
+              borderRadius: '3px',
+              marginLeft: '0.25rem',
+              letterSpacing: '0.05em'
+            }}>
+              #RAGInGoa
+            </span>
           </div>
           <div className="text-mono" style={{ color: '#a0aec0', marginTop: '0.35rem', fontSize: '12px' }}>
-            OFFICIAL DIGITAL ACTIVATION · GOA, INDIA 2026 · TASK 2
+            OFFICIAL DIGITAL ACTIVATION · GOA, INDIA 2026 · TASK 2 · <strong style={{ color: 'var(--hh-pink)' }}>#RAGInGoa</strong>
           </div>
         </div>
 
@@ -70,9 +84,9 @@ export function Footer() {
         <div className="text-mono" style={{ color: '#a0aec0', fontSize: '11px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
           <span>Crafted by <strong style={{ color: 'var(--hh-yellow)' }}>2:47PM STUDIO</strong></span>
           <span>·</span>
-          <span>Built for Hacker House Goa 2026 Shortlisting Task 2</span>
+          <span>Official Submission: <strong style={{ color: 'var(--hh-pink)' }}>#RAGInGoa</strong></span>
           <span>·</span>
-          <span>Production Voice RAG Model</span>
+          <span>Built for Hacker House Goa 2026 Shortlisting Task 2</span>
         </div>
       </div>
     </footer>
