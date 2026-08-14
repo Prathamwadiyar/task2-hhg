@@ -40,27 +40,8 @@ export function Hero({ onTryVoice, onExploreArch }) {
 
       <div className="container">
         
-        {/* Top Official Pill Badges including #RAGInGoa & 2:47PM STUDIO */}
+        {/* Top Official Pill Badges */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
-          <span style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            padding: '0.4rem 1.25rem',
-            background: 'var(--hh-pink)',
-            color: '#ffffff',
-            border: '2px solid var(--hh-black)',
-            borderRadius: '999px',
-            boxShadow: '3px 3px 0px #000000',
-            fontFamily: 'var(--font-heading)',
-            fontSize: '14px',
-            fontWeight: 900,
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-          }}>
-            <span style={{ color: 'var(--hh-yellow)' }}>★</span> #RAGInGoa
-          </span>
-
           <span style={{
             display: 'inline-block',
             padding: '0.35rem 1rem',
@@ -111,34 +92,21 @@ export function Hero({ onTryVoice, onExploreArch }) {
             </h1>
           </div>
 
-          {/* Prominent #RAGInGoa Highlight Spotlight Ribbon */}
-          <div style={{
-            margin: '1.25rem auto 1rem',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.75rem',
-            background: '#073d22',
-            color: '#ffffff',
-            padding: '0.5rem 1.4rem',
-            border: '2px solid var(--hh-yellow)',
-            borderRadius: '8px',
-            boxShadow: '4px 4px 0px var(--hh-pink)',
-          }}>
-            <span style={{ color: 'var(--hh-yellow)', fontSize: '1.1rem', fontWeight: 900 }}>✦</span>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', fontWeight: 700, letterSpacing: '0.12em', color: '#e2e8f0' }}>
-              OFFICIAL TASK HASHTAG:
-            </span>
+          {/* Highlighted #RAGInGoa Hashtag */}
+          <div style={{ margin: '1.25rem auto 1.25rem', display: 'flex', justifyContent: 'center' }}>
             <span style={{
+              display: 'inline-block',
               fontFamily: 'var(--font-heading)',
-              fontSize: '17px',
+              fontSize: 'clamp(1.4rem, 3.5vw, 2.2rem)',
               fontWeight: 900,
               background: 'var(--hh-pink)',
               color: '#ffffff',
-              padding: '0.2rem 0.75rem',
-              borderRadius: '4px',
+              padding: '0.35rem 1.6rem',
+              borderRadius: '8px',
               letterSpacing: '0.06em',
-              textShadow: '1px 1px 0px #000',
-              border: '1.5px solid #fee101'
+              textShadow: '2px 2px 0px #000000',
+              border: '2.5px solid var(--hh-yellow)',
+              boxShadow: '4px 4px 0px #073d22',
             }}>
               #RAGInGoa
             </span>

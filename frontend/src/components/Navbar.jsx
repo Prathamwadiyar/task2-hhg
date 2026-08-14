@@ -92,21 +92,6 @@ export function Navbar({ currentView = 'main', onNavigate }) {
           }}>
             2:47PM STUDIO
           </span>
-          <span style={{
-            fontFamily: 'var(--font-heading)',
-            fontSize: '10px',
-            fontWeight: 900,
-            background: 'var(--hh-pink)',
-            color: '#ffffff',
-            padding: '0.15rem 0.45rem',
-            border: '1px solid #fee101',
-            boxShadow: '1.5px 1.5px 0px #000',
-            borderRadius: '3px',
-            marginLeft: '0.25rem',
-            letterSpacing: '0.05em'
-          }}>
-            #RAGInGoa
-          </span>
         </a>
 
         {/* Desktop Navigation Links */}
