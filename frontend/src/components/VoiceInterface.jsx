@@ -132,11 +132,16 @@ export function VoiceInterface({ result, onResult, onReset, onExplain }) {
       setStage('retrieving');
       let resultRes = await queryVoice(audioFile, language);
 
-      const isFallback = !resultRes.transcription || resultRes.transcription === 'कॉरपोरेशन क्या है?' || resultRes.transcription === 'What is a corporation?';
-      if (isFallback && speechTranscriptRef.current) {
-        const isoLang = language.split('-')[0].toLowerCase();
-        resultRes = await queryText(speechTranscriptRef.current, isoLang);
-        resultRes.transcription = speechTranscriptRef.current;
+      if (typeof resultRes === 'object' && resultRes !== null) {
+        const isFallback = !resultRes.transcription || resultRes.transcription === 'कॉरपोरेशन क्या है?' || resultRes.transcription === 'What is a corporation?';
+        if (isFallback && speechTranscriptRef.current) {
+          const isoLang = language.split('-')[0].toLowerCase();
+          const textRes = await queryText(speechTranscriptRef.current, isoLang);
+          if (typeof textRes === 'object' && textRes !== null) {
+            resultRes = textRes;
+            resultRes.transcription = speechTranscriptRef.current;
+          }
+        }
       }
 
       setStage('generating');
@@ -148,16 +153,18 @@ export function VoiceInterface({ result, onResult, onReset, onExplain }) {
         try {
           const isoLang = language.split('-')[0].toLowerCase();
           const textResult = await queryText(speechTranscriptRef.current, isoLang);
-          textResult.transcription = speechTranscriptRef.current;
-          setStage('complete');
-          onResult(textResult);
-          return;
+          if (typeof textResult === 'object' && textResult !== null) {
+            textResult.transcription = speechTranscriptRef.current;
+            setStage('complete');
+            onResult(textResult);
+            return;
+          }
         } catch (textErr) {}
       }
-      const isConnRefused = err.message?.includes('504') || err.message?.includes('Fetch') || err.message?.includes('Failed');
+      const isConnRefused = err.message?.includes('504') || err.message?.includes('Fetch') || err.message?.includes('Failed') || err.message?.includes('unreachable') || err.message?.includes('HTML');
       setError(
         isConnRefused
-          ? 'Backend server not responding. Please make sure uvicorn backend is running on http://localhost:8000'
+          ? 'Backend server not responding. Please ensure Python backend is running on http://localhost:8000 (or configure VITE_API_BASE_URL).'
           : (err.message || 'Voice query failed.')
       );
       setStage('idle');

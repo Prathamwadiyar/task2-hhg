@@ -2,7 +2,10 @@
  * Centralized API Service Layer for Voice-Enabled RAG Application.
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ||
+  (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? ''
+    : 'http://localhost:8000');
 
 /**
  * Helper to handle HTTP API response JSON and structured errors.
@@ -14,12 +17,18 @@ async function handleResponse(response) {
   if (contentType && contentType.includes('application/json')) {
     data = await response.json();
   } else {
-    data = await response.text();
+    const rawText = await response.text();
+    if (typeof rawText === 'string' && (rawText.trim().startsWith('<!DOCTYPE') || rawText.trim().startsWith('<html'))) {
+      const error = new Error('Backend API server unreachable. Please start the backend FastAPI server on http://localhost:8000 (or configure VITE_API_BASE_URL).');
+      error.status = 503;
+      throw error;
+    }
+    data = rawText;
   }
 
   if (!response.ok) {
     const errorMessage =
-      (data && data.error && data.error.message) ||
+      (data && typeof data === 'object' && data.error && data.error.message) ||
       (typeof data === 'string' ? data : `HTTP ${response.status} Error`);
     
     const error = new Error(errorMessage);
