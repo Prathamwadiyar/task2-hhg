@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "hhgoa-task2",
+    "site": "hacklords-hhg2",
     "public": "frontend/dist",
     "ignore": [
       "firebase.json",
