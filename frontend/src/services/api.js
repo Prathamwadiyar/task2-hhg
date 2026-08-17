@@ -10,7 +10,95 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ||
     : '');
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
+const NVIDIA_API_KEY = import.meta.env.VITE_NVIDIA_API_KEY || import.meta.env.VITE_LLM_API_KEY || '';
+const NVIDIA_BASE_URL = import.meta.env.VITE_NVIDIA_BASE_URL || 'https://integrate.api.nvidia.com/v1';
+const NVIDIA_MODEL = import.meta.env.VITE_LLM_MODEL || 'nvidia/llama-3.1-nemotron-70b-instruct';
 const SARVAM_API_KEY = import.meta.env.VITE_SARVAM_API_KEY || '';
+
+/**
+ * Strip raw markdown artifacts (###, **, *, etc.) and format into clean, readable prose paragraphs.
+ */
+export function cleanMarkdownToProse(rawText) {
+  if (!rawText || typeof rawText !== 'string') return '';
+
+  let text = rawText;
+
+  // 1. Convert markdown headers like ### 1. Title or ## Title into clean title lines with linebreaks
+  text = text.replace(/#{1,6}\s*([^\n\r]+)/g, '\n\n$1\n');
+
+  // 2. Remove bold & italic markdown markers: **text** -> text, *text* -> text
+  text = text.replace(/\*\*([^*]+)\*\*/g, '$1');
+  text = text.replace(/\*([^*]+)\*/g, '$1');
+  text = text.replace(/__([^_]+)__/g, '$1');
+  text = text.replace(/_([^_]+)_/g, '$1');
+
+  // 3. Convert bullet asterisks to clean bullet points
+  text = text.replace(/^\s*[\*\-\+]\s+/gm, '• ');
+  text = text.replace(/\s+[\*\-\+]\s+/g, '\n• ');
+
+  // 4. Remove any remaining isolated hashes or double asterisks
+  text = text.replace(/[#\*]{2,}/g, '');
+  text = text.replace(/(^|\s)#+\s+/g, '$1');
+
+  // 5. Clean up excessive whitespace and newlines
+  text = text.replace(/[ \t]+/g, ' ');
+  text = text.replace(/\n\s*\n\s*\n+/g, '\n\n');
+
+  return text.trim();
+}
+
+/**
+ * Direct call to NVIDIA Nemotron LLM API
+ */
+async function callNemotronDirectly(query, language = 'en') {
+  if (!query || !query.trim() || !NVIDIA_API_KEY) return null;
+
+  const isoLang = (language || 'en').split('-')[0].toLowerCase();
+  const langPrompts = {
+    hi: 'उत्तर पूर्ण, शुद्ध, स्वाभाविक और स्पष्ट हिंदी (Devanagari script) में दें। वाक्य विन्यास स्वाभाविक रखें। किसी भी प्रकार के हैशटैग (###) या तारांकन (**) का उपयोग न करें।',
+    kn: 'ಉತ್ತರವನ್ನು ಸಂಪೂರ್ಣ, ನಿಖರ ಮತ್ತು ಸ್ಪಷ್ಟ ಕನ್ನಡದಲ್ಲಿ ನೀಡಿ. ಯಾವುದೇ ಹ್ಯಾಶ್‌ಟ್ಯಾಗ್ (###) ಅಥವಾ ನಕ್ಷತ್ರ ಚಿಹ್ನೆಗಳನ್ನು (**) ಬಳಸಬೇಡಿ.',
+    mr: 'उत्तर पूर्ण, अचूक आणि स्पष्ट मराठीत (Devanagari script) द्या. वाक्यांमध्ये हॅशटॅग (###) किंवा अ‍ॅस्टरिस्क (**) वापरू नका.',
+    en: 'Provide a complete, comprehensive, factual, and well-explained answer. Write in natural, fluid prose. DO NOT use markdown hashtags (###) or asterisks (**) in your sentences.',
+  };
+
+  const instruction = langPrompts[isoLang] || langPrompts.en;
+
+  try {
+    const res = await fetch(`${NVIDIA_BASE_URL}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${NVIDIA_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: NVIDIA_MODEL,
+        messages: [
+          {
+            role: 'system',
+            content: `You are an expert multilingual AI assistant for HH Goa 2026.\n\nINSTRUCTION: ${instruction}\nWrite in clean, well-formed paragraphs with standard punctuation without raw markdown symbols like ### or **.`,
+          },
+          {
+            role: 'user',
+            content: query,
+          },
+        ],
+        temperature: 0.2,
+        max_tokens: 1024,
+      }),
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      const text = data.choices?.[0]?.message?.content?.trim();
+      if (text) {
+        return cleanMarkdownToProse(text);
+      }
+    }
+  } catch (err) {
+    console.warn('Direct NVIDIA Nemotron request failed:', err);
+  }
+  return null;
+}
 
 /**
  * Direct call to Google Gemini Generative Language API
@@ -20,14 +108,14 @@ async function callGeminiDirectly(query, language = 'en') {
 
   const isoLang = (language || 'en').split('-')[0].toLowerCase();
   const langPrompts = {
-    hi: 'उत्तर पूर्ण, शुद्ध, स्वाभाविक और स्पष्ट हिंदी (Devanagari script) में दें। उत्तर संपूर्ण, समृद्ध और तथ्यात्मक होना चाहिए और कभी भी अधूरा नहीं कटना चाहिए।',
-    kn: 'ಉತ್ತರವನ್ನು ಸಂಪೂರ್ಣ, ನಿಖರ ಮತ್ತು ಸ್ಪಷ್ಟ ಕನ್ನಡದಲ್ಲಿ ನೀಡಿ. ಉತ್ತರವು ವಿವರಣಾತ್ಮಕವಾಗಿರಬೇಕು ಮತ್ತು ಅಪೂರ್ಣವಾಗಿರಬಾರದು.',
-    mr: 'उत्तर पूर्ण, अचूक आणि स्पष्ट मराठीत (Devanagari script) द्या. उत्तर माहितीपूर्ण, परिपूर्ण आणि अखंड असावे.',
-    en: 'Provide a complete, comprehensive, factual, and well-explained answer. Ensure the answer is fully formed, clearly articulated, and never cut off.',
+    hi: 'उत्तर पूर्ण, शुद्ध, स्वाभाविक और स्पष्ट हिंदी में दें। हैशटैग (###) या तारांकन (**) का उपयोग न करें।',
+    kn: 'ಉತ್ತರವನ್ನು ಸಂಪೂರ್ಣ, ನಿಖರ ಮತ್ತು ಸ್ಪಷ್ಟ ಕನ್ನಡದಲ್ಲಿ ನೀಡಿ. ಹ್ಯಾಶ್‌ಟ್ಯಾಗ್ (###) ಅಥವಾ ನಕ್ಷತ್ರ ಚಿಹ್ನೆಗಳನ್ನು (**) ಬಳಸಬೇಡಿ.',
+    mr: 'उत्तर पूर्ण, अचूक आणि स्पष्ट मराठीत द्या. हॅशटॅग (###) किंवा अ‍ॅस्टरिस्क (**) वापरू नका.',
+    en: 'Provide a complete, comprehensive, and well-explained answer in clean paragraphs without markdown hashtags (###) or asterisks (**).',
   };
 
   const instruction = langPrompts[isoLang] || langPrompts.en;
-  const models = ['gemini-3-flash-preview', 'gemini-3.1-flash-lite', 'gemini-3.5-flash', 'gemini-flash-latest'];
+  const models = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-flash-latest'];
 
   for (const model of models) {
     try {
@@ -37,13 +125,13 @@ async function callGeminiDirectly(query, language = 'en') {
           {
             parts: [
               {
-                text: `You are an expert multilingual AI assistant for HH Goa 2026.\n\n${instruction}\n\nUser Question: ${query}\n\nComplete Answer:`
+                text: `You are an expert multilingual AI assistant for HH Goa 2026.\n\n${instruction}\n\nUser Question: ${query}\n\nComplete Clean Answer:`
               }
             ]
           }
         ],
         generationConfig: {
-          temperature: 0.3,
+          temperature: 0.2,
           maxOutputTokens: 1024,
         }
       };
@@ -58,7 +146,7 @@ async function callGeminiDirectly(query, language = 'en') {
         const data = await res.json();
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
         if (text) {
-          return text;
+          return cleanMarkdownToProse(text);
         }
       }
     } catch (err) {
@@ -100,7 +188,7 @@ async function callSarvamSTTDirectly(audioFile, languageCode = 'en-IN') {
 }
 
 /**
- * Synthesize complete RAG response with Gemini answer, MSMARCO-XI citations, and 9-stage telemetry.
+ * Synthesize complete RAG response with LLM answer, MSMARCO-XI citations, and 9-stage telemetry.
  */
 async function synthesizeFullRAGResponse(queryStr, language = 'en', isVoice = false) {
   const rawQuery = (queryStr || '').trim();
@@ -111,10 +199,16 @@ async function synthesizeFullRAGResponse(queryStr, language = 'en', isVoice = fa
   const retrievalMs = Number((10 + Math.random() * 8).toFixed(2));
 
   const startGen = performance.now();
-  const geminiAnswer = await callGeminiDirectly(rawQuery, isoLang);
+  let generatedAnswer = null;
+  if (NVIDIA_API_KEY) {
+    generatedAnswer = await callNemotronDirectly(rawQuery, isoLang);
+  }
+  if (!generatedAnswer && GEMINI_API_KEY) {
+    generatedAnswer = await callGeminiDirectly(rawQuery, isoLang);
+  }
   const generationMs = Number((performance.now() - startGen || 340).toFixed(1));
 
-  let finalAnswer = geminiAnswer;
+  let finalAnswer = generatedAnswer;
   if (!finalAnswer) {
     if (isoLang === 'hi') {
       finalAnswer = `"${rawQuery}" के संबंध में प्राप्त संदर्भ के अनुसार विस्तृत एवं प्रामाणिक जानकारी उपलब्ध है।`;

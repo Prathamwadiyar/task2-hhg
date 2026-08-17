@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
+import { cleanMarkdownToProse } from '../services/api';
 
 export function AnswerPanel({ result, onExplain }) {
   const panelRef = useRef(null);
@@ -16,6 +17,8 @@ export function AnswerPanel({ result, onExplain }) {
   const sourceCount = sources?.length || 0;
   const totalMs = latency?.total_ms || 0;
   const isGrounded = guardrail_passed !== false;
+  const cleanedAnswer = cleanMarkdownToProse(answer);
+  const paragraphs = cleanedAnswer ? cleanedAnswer.split('\n\n') : [];
 
   return (
     <section className="section section-dark" ref={panelRef}>
@@ -47,9 +50,13 @@ export function AnswerPanel({ result, onExplain }) {
               </div>
             </div>
 
-            <p style={{ fontSize: '1.05rem', lineHeight: 1.8, color: 'var(--hh-black)', fontWeight: 500 }}>
-              {answer}
-            </p>
+            <div style={{ fontSize: '1.05rem', lineHeight: 1.8, color: 'var(--hh-black)', fontWeight: 500 }}>
+              {paragraphs.map((para, idx) => (
+                <p key={idx} style={{ marginBottom: idx < paragraphs.length - 1 ? '1.1rem' : 0 }}>
+                  {para}
+                </p>
+              ))}
+            </div>
 
             {request_id && (
               <div className="text-mono" style={{ marginTop: '1.25rem', color: 'var(--text-muted)', fontSize: '11px', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.75rem' }}>

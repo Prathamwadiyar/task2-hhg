@@ -20,7 +20,7 @@ export function Hero({ onTryVoice, onExploreArch }) {
     'MULTILINGUAL RETRIEVAL',
     'SARVAM AI STT',
     'QDRANT VECTOR DB',
-    'GOOGLE GEMINI LLM',
+    'NVIDIA NEMOTRON LLM',
   ];
 
   return (
@@ -133,7 +133,7 @@ export function Hero({ onTryVoice, onExploreArch }) {
             fontSize: 'clamp(0.9rem, 2vw, 1.05rem)',
             lineHeight: 1.6,
           }}>
-            Production-quality Speech-to-Text & Multilingual Vector Search powered by Sarvam AI, Qdrant DB, and Google Gemini LLM.
+            Production-quality Speech-to-Text & Multilingual Vector Search powered by Sarvam AI, Qdrant DB, and NVIDIA Nemotron LLM.
           </p>
 
           {/* Neo-Brutalist Action Buttons */}

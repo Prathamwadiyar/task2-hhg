@@ -120,7 +120,7 @@ const PIPELINE_STAGES = [
   {
     step: '06',
     title: 'Grounded LLM Generation & Citations',
-    subtitle: 'Strictly Grounded Synthesis via Google Gemini LLM',
+    subtitle: 'Strictly Grounded Synthesis via NVIDIA Nemotron LLM',
     badge: 'STAGE 6 · ANSWER GENERATION',
     badgeColor: 'badge-yellow',
     icon: (
@@ -129,14 +129,14 @@ const PIPELINE_STAGES = [
       </svg>
     ),
     description:
-      'The assembled context and user query are passed to Google Gemini 1.5 Flash through an orchestration harness. The prompt instructions enforce strict factual grounding: the model must answer solely using provided passage context and must attribute sources with bracketed citations.',
+      'The assembled context and user query are passed to NVIDIA Nemotron (nvidia/llama-3.1-nemotron-70b-instruct) through an orchestration harness. The prompt instructions enforce strict factual grounding: the model must answer solely using provided passage context and must attribute sources with bracketed citations.',
     specs: [
-      { label: 'LLM Model', value: 'Google Gemini 1.5 Flash' },
+      { label: 'LLM Model', value: 'NVIDIA Llama-3.1 Nemotron 70B' },
       { label: 'Temperature', value: '0.2 (High Determinism)' },
       { label: 'Hallucination Policy', value: 'Strict Fallback Refusal' },
       { label: 'Citation Linking', value: 'Direct Document & Chunk Attribution' },
     ],
-    flow: ['Prompt + Retrieved Context', '→', 'Gemini Reasoning Engine', '→', 'Grounded Answer + Citations'],
+    flow: ['Prompt + Retrieved Context', '→', 'Nemotron Reasoning Engine', '→', 'Grounded Answer + Citations'],
   },
   {
     step: '07',
@@ -374,69 +374,83 @@ export function ExplanationPage({ onBack, currentResult }) {
             </h2>
           </div>
 
-          {/* Clean, perfectly-aligned responsive flow pipeline */}
+          {/* Clean, vertical responsive flowchart pipeline with hand-drawn doodle arrows */}
           <div style={{
             display: 'flex',
-            flexWrap: 'wrap',
-            gap: '0.75rem',
-            justifyContent: 'center',
-            alignItems: 'stretch',
+            flexDirection: 'column',
+            alignItems: 'center',
+            maxWidth: '560px',
+            margin: '0 auto',
+            gap: '0',
           }}>
             {[
-              { title: '1. Audio Capture', tag: 'WebM / WAV (Mic)', bg: 'var(--hh-yellow)', color: '#000' },
-              { title: '2. Sarvam STT', tag: 'saarika:v2.5', bg: 'var(--hh-pink)', color: '#fff' },
-              { title: '3. Guardrails', tag: 'Safety Harness', bg: '#fef3c7', color: '#000' },
-              { title: '4. Multilingual E5', tag: '384d Vector', bg: 'var(--hh-yellow)', color: '#000' },
-              { title: '5. Qdrant DB', tag: 'HNSW Search', bg: 'var(--hh-green)', color: '#fff' },
-              { title: '6. Gemini LLM', tag: 'Grounded RAG', bg: '#e0e7ff', color: '#000' },
-              { title: '7. Output & Metrics', tag: 'Citations + 9 Stages', bg: '#dcfce7', color: '#000' },
+              { title: '1. Audio Capture', tag: 'WebM / WAV (16kHz Mic Stream)', bg: 'var(--hh-yellow)', color: '#000' },
+              { title: '2. Sarvam STT', tag: 'saarika:v2.5 (Indic Voice Transcription)', bg: 'var(--hh-pink)', color: '#fff' },
+              { title: '3. Guardrails & Validation', tag: 'Prompt Injection & Safety Harness', bg: '#fef3c7', color: '#000' },
+              { title: '4. Multilingual E5 Embeddings', tag: '384-dimensional Dense Vectorization', bg: 'var(--hh-yellow)', color: '#000' },
+              { title: '5. Qdrant Vector DB', tag: 'HNSW Cosine Similarity Search', bg: 'var(--hh-green)', color: '#fff' },
+              { title: '6. NVIDIA Nemotron LLM', tag: 'Grounded Synthesis & Citation Harness', bg: '#e0e7ff', color: '#000' },
+              { title: '7. Output & Telemetry', tag: 'Citations & 9-Stage Timing Telemetry', bg: '#dcfce7', color: '#000' },
             ].map((node, i) => (
               <React.Fragment key={i}>
                 <div
                   className="flow-node"
                   style={{
-                    flex: '1 1 125px',
-                    minWidth: '120px',
-                    maxWidth: '145px',
+                    width: '100%',
                     background: node.bg,
                     color: node.color,
-                    border: '2px solid #000',
-                    boxShadow: '3px 3px 0px #000',
-                    padding: '0.9rem 0.6rem',
-                    textAlign: 'center',
-                    borderRadius: '8px',
+                    border: '2.5px solid #000',
+                    boxShadow: '4px 4px 0px #000',
+                    padding: '1rem 1.25rem',
+                    textAlign: 'left',
+                    borderRadius: '6px',
                     transition: 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease',
-                    cursor: 'default',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-4px)';
-                    e.currentTarget.style.boxShadow = '5px 5px 0px #000';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '6px 6px 0px #000';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = 'translateY(0px)';
-                    e.currentTarget.style.boxShadow = '3px 3px 0px #000';
+                    e.currentTarget.style.boxShadow = '4px 4px 0px #000';
                   }}
                 >
-                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: '13px', fontWeight: 800, textTransform: 'uppercase', lineHeight: 1.2 }}>
-                    {node.title}
+                  <div>
+                    <div style={{ fontFamily: 'var(--font-heading)', fontSize: '15px', fontWeight: 900, textTransform: 'uppercase', lineHeight: 1.2 }}>
+                      {node.title}
+                    </div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', fontWeight: 700, marginTop: '0.2rem', opacity: 0.9 }}>
+                      {node.tag}
+                    </div>
                   </div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700, marginTop: '0.35rem', opacity: 0.9 }}>
-                    {node.tag}
-                  </div>
+                  <span style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '11px',
+                    fontWeight: 900,
+                    background: '#000',
+                    color: '#fff',
+                    padding: '0.2rem 0.5rem',
+                    borderRadius: '3px',
+                  }}>
+                    0{i + 1}
+                  </span>
                 </div>
 
                 {i < 6 && (
-                  <div className="flow-arrow" style={{
+                  <div style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '14px',
-                    fontWeight: 900,
-                    color: 'var(--hh-pink)',
+                    margin: '0.35rem 0',
                     userSelect: 'none',
                   }}>
-                    →
+                    <svg width="26" height="46" viewBox="0 0 26 46" fill="none">
+                      <path d="M 13 3 L 13 40" stroke="#000000" strokeWidth="2.8" strokeLinecap="round" />
+                      <path d="M 5 29 L 13 41 L 21 29" stroke="#000000" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                    </svg>
                   </div>
                 )}
               </React.Fragment>

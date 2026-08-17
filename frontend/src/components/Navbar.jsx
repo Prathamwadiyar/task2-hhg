@@ -149,7 +149,7 @@ export function Navbar({ currentView = 'main', onNavigate }) {
               TRY RAG
             </button>
           )}
-          
+
           <button
             className="navbar-mobile-toggle"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -184,4 +184,4 @@ export function Navbar({ currentView = 'main', onNavigate }) {
       )}
     </nav>
   );
-}
+} 

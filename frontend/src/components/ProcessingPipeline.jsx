@@ -1,14 +1,12 @@
 import React from 'react';
 
 const FLOW_STAGES = [
-  // Row 1: Left -> Right
   {
-    row: 1,
     step: '01',
     key: 'voice',
     title: 'VOICE INPUT',
     tech: 'WEB AUDIO API',
-    desc: 'Capture 16kHz PCM audio stream',
+    desc: 'Capture 16kHz PCM audio stream from user microphone',
     iconPath: 'M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z M19 10v2a7 7 0 0 1-14 0v-2 M12 19v3',
   },
   {
@@ -16,7 +14,7 @@ const FLOW_STAGES = [
     key: 'stt',
     title: 'SPEECH-TO-TEXT',
     tech: 'SARVAM AI',
-    desc: 'Indic speech audio to text transcription',
+    desc: 'Indic speech audio to text transcription via saarika:v2.5',
     iconPath: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M16 13H8 M16 17H8',
   },
   {
@@ -24,17 +22,15 @@ const FLOW_STAGES = [
     key: 'query',
     title: 'QUERY VALIDATION',
     tech: 'GUARDRAILS v1',
-    desc: 'Sanitize query & detect language ISO',
+    desc: 'Sanitize query, detect language ISO & verify security policies',
     iconPath: 'M21 21l-4.35-4.35 M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z',
   },
-
-  // Row 2: Right -> Left (S-Curve)
   {
     step: '04',
     key: 'embedding',
     title: 'VECTOR EMBEDDING',
     tech: 'MULTILINGUAL E5',
-    desc: 'Encode query into 384d dense vector',
+    desc: 'Encode query into 384-dimensional dense semantic vector',
     iconPath: 'M3 3h7v7H3z M14 3h7v7h-7z M14 14h7v7h-7z M3 14h7v7H3z',
   },
   {
@@ -42,7 +38,7 @@ const FLOW_STAGES = [
     key: 'qdrant',
     title: 'QDRANT SEARCH',
     tech: 'QDRANT DB',
-    desc: 'Cosine similarity Top-K search',
+    desc: 'Cosine similarity Top-K HNSW index search across MS MARCO',
     iconPath: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z',
   },
   {
@@ -50,17 +46,15 @@ const FLOW_STAGES = [
     key: 'ranking',
     title: 'CONTEXT RERANKING',
     tech: 'SCORE THRESHOLD',
-    desc: 'Filter low scores & deduplicate chunks',
+    desc: 'Filter low scores, deduplicate chunks & order by relevance',
     iconPath: 'M12 20V10 M18 20V4 M6 20v-4',
   },
-
-  // Row 3: Left -> Right
   {
     step: '07',
     key: 'rag',
     title: 'RAG GENERATION',
-    tech: 'GOOGLE GEMINI',
-    desc: 'Synthesize grounded LLM answer',
+    tech: 'NVIDIA NEMOTRON',
+    desc: 'Synthesize grounded LLM answer with strict citation constraints',
     iconPath: 'M12 2v4 M12 18v4 M4.93 4.93l2.83 2.83 M16.24 16.24l2.83 2.83 M2 12h4 M18 12h4 M4.93 19.07l2.83-2.83 M16.24 7.76l2.83-2.83',
   },
   {
@@ -68,7 +62,7 @@ const FLOW_STAGES = [
     key: 'guardrail',
     title: 'GROUNDING SAFETY',
     tech: 'HALLUCINATION GUARD',
-    desc: 'Verify factuality against sources',
+    desc: 'Verify factuality against source passages & prevent hallucinations',
     iconPath: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
   },
   {
@@ -76,7 +70,7 @@ const FLOW_STAGES = [
     key: 'answer',
     title: 'GROUNDED RESPONSE',
     tech: 'CITATIONS & STATS',
-    desc: 'Final response with citations & telemetry',
+    desc: 'Final synthesized response with passage citations & latency telemetry',
     iconPath: 'M22 11.08V12a10 10 0 1 1-5.93-9.14 M22 4L12 14.01l-3-3',
   },
 ];
@@ -94,59 +88,26 @@ export function ProcessingPipeline({ activeStage }) {
           <h2 className="heading-section" style={{ marginTop: '0.35rem' }}>
             STEP-BY-STEP <span style={{ color: 'var(--hh-green)' }}>RAG FLOWCHART</span>
           </h2>
-          <p style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: '13px', marginTop: '0.5rem', maxWidth: '560px', margin: '0.5rem auto 0' }}>
+          <p style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: '13px', marginTop: '0.5rem', maxWidth: '580px', margin: '0.5rem auto 0' }}>
             Sequential end-to-end processing pipeline connected with live telemetry flow paths.
           </p>
         </div>
 
-        {/* Interactive Flowchart Diagram Workspace */}
-        <div style={{ maxWidth: '1050px', margin: '0 auto', position: 'relative' }}>
-          
-          {/* ROW 1: Stages 01 -> 02 -> 03 (Left to Right) */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', flexWrap: 'wrap' }}>
-            {FLOW_STAGES.slice(0, 3).map((node, i) => (
-              <React.Fragment key={node.key}>
-                <FlowCard node={node} activeStage={activeStage} stageIndex={stageIndex} totalIdx={i} />
-                {i < 2 && <ArrowHorizontal direction="right" />}
-              </React.Fragment>
-            ))}
-          </div>
-
-          {/* Right Curvy Arrow Connector (Row 1 -> Row 2) */}
-          <div className="curvy-connector-right" style={{ display: 'flex', justifyContent: 'flex-end', padding: '1rem 3rem 1rem 0' }}>
-            <svg width="120" height="70" viewBox="0 0 120 70" fill="none">
-              <path d="M 20 0 C 100 0, 100 70, 20 70" stroke="#000" strokeWidth="3" strokeDasharray="6 4" fill="none" />
-              <polygon points="15,65 25,70 25,60" fill="#000" />
-            </svg>
-          </div>
-
-          {/* ROW 2: Stages 06 <- 05 <- 04 (Right to Left / Reverse Flow) */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', flexWrap: 'wrap' }}>
-            <FlowCard node={FLOW_STAGES[3]} activeStage={activeStage} stageIndex={stageIndex} totalIdx={3} />
-            <ArrowHorizontal direction="left" />
-            <FlowCard node={FLOW_STAGES[4]} activeStage={activeStage} stageIndex={stageIndex} totalIdx={4} />
-            <ArrowHorizontal direction="left" />
-            <FlowCard node={FLOW_STAGES[5]} activeStage={activeStage} stageIndex={stageIndex} totalIdx={5} />
-          </div>
-
-          {/* Left Curvy Arrow Connector (Row 2 -> Row 3) */}
-          <div className="curvy-connector-left" style={{ display: 'flex', justifyContent: 'flex-start', padding: '1rem 0 1rem 3rem' }}>
-            <svg width="120" height="70" viewBox="0 0 120 70" fill="none">
-              <path d="M 100 0 C 20 0, 20 70, 100 70" stroke="#000" strokeWidth="3" strokeDasharray="6 4" fill="none" />
-              <polygon points="105,65 95,70 95,60" fill="#000" />
-            </svg>
-          </div>
-
-          {/* ROW 3: Stages 07 -> 08 -> 09 (Left to Right) */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', flexWrap: 'wrap' }}>
-            {FLOW_STAGES.slice(6, 9).map((node, i) => (
-              <React.Fragment key={node.key}>
-                <FlowCard node={node} activeStage={activeStage} stageIndex={stageIndex} totalIdx={i + 6} />
-                {i < 2 && <ArrowHorizontal direction="right" />}
-              </React.Fragment>
-            ))}
-          </div>
-
+        {/* Vertical Flowchart Pipeline Workspace */}
+        <div style={{ maxWidth: '640px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          {FLOW_STAGES.map((node, i) => (
+            <React.Fragment key={node.key}>
+              <FlowCard
+                node={node}
+                activeStage={activeStage}
+                stageIndex={stageIndex}
+                totalIdx={i}
+              />
+              {i < FLOW_STAGES.length - 1 && (
+                <HandDrawnArrow index={i} />
+              )}
+            </React.Fragment>
+          ))}
         </div>
 
       </div>
@@ -154,7 +115,7 @@ export function ProcessingPipeline({ activeStage }) {
   );
 }
 
-/* Individual Neo-Brutalist Flowchart Node Card */
+/* Individual Neo-Brutalist Vertical Flowchart Node Card */
 function FlowCard({ node, activeStage, stageIndex, totalIdx }) {
   const isActive = node.key === activeStage;
   const isComplete = stageIndex > totalIdx;
@@ -163,76 +124,101 @@ function FlowCard({ node, activeStage, stageIndex, totalIdx }) {
     <div
       className="card-brutalist"
       style={{
-        flex: '1 1 280px',
-        maxWidth: '310px',
-        padding: '1.25rem',
+        width: '100%',
+        padding: '1.25rem 1.5rem',
         background: isActive ? 'var(--hh-yellow)' : isComplete ? '#dcfce7' : 'var(--hh-white)',
-        border: '2px solid #000',
+        border: '2.5px solid #000',
         boxShadow: isActive ? '6px 6px 0px #000' : '4px 4px 0px #000',
-        transition: 'all 0.2s ease',
+        transition: 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background-color 0.2s ease',
+        borderRadius: '6px',
         opacity: 1,
         visibility: 'visible',
       }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'translateY(-2px)';
+        e.currentTarget.style.boxShadow = '6px 6px 0px #000';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'translateY(0px)';
+        e.currentTarget.style.boxShadow = isActive ? '6px 6px 0px #000' : '4px 4px 0px #000';
+      }}
     >
       {/* Header Badge Row */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span style={{
             fontFamily: 'var(--font-mono)',
             fontSize: '11px',
             fontWeight: 900,
             background: '#000',
             color: 'var(--hh-yellow)',
-            padding: '0.15rem 0.5rem',
+            padding: '0.15rem 0.55rem',
+            border: '1px solid #000',
+            borderRadius: '2px',
           }}>
             {node.step}
           </span>
-          <span className="text-mono" style={{ fontSize: '10px', fontWeight: 800, color: 'var(--hh-pink)' }}>
+          <span className="text-mono" style={{ fontSize: '11px', fontWeight: 800, color: 'var(--hh-pink)', letterSpacing: '0.04em' }}>
             {node.tech}
           </span>
         </div>
 
-        {isComplete && <span className="badge badge-success" style={{ fontSize: '9px' }}>✓ DONE</span>}
-        {isActive && <span className="badge badge-pink" style={{ fontSize: '9px', animation: 'blink 1s infinite' }}>★ RUNNING</span>}
-        {!isComplete && !isActive && <span className="badge" style={{ fontSize: '9px', background: 'var(--hh-gray-light)', color: '#000' }}>READY</span>}
+        {isComplete && (
+          <span className="badge badge-success" style={{ fontSize: '10px', padding: '0.2rem 0.6rem', border: '1.5px solid #000' }}>
+            ✓ DONE
+          </span>
+        )}
+        {isActive && (
+          <span className="badge badge-pink" style={{ fontSize: '10px', padding: '0.2rem 0.6rem', border: '1.5px solid #000', animation: 'blink 1s infinite' }}>
+            ★ RUNNING
+          </span>
+        )}
+        {!isComplete && !isActive && (
+          <span className="badge" style={{ fontSize: '10px', padding: '0.2rem 0.6rem', background: 'var(--hh-gray-light)', color: '#000', border: '1.5px solid #000' }}>
+            READY
+          </span>
+        )}
       </div>
 
       {/* Main Title & Icon */}
-      <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
         <div style={{
-          width: '38px',
-          height: '38px',
-          minWidth: '38px',
+          width: '42px',
+          height: '42px',
+          minWidth: '42px',
           background: isActive ? '#000' : 'var(--hh-yellow)',
           color: isActive ? 'var(--hh-yellow)' : '#000',
           border: '2px solid #000',
-          boxShadow: '2px 2px 0px #000',
+          boxShadow: '2.5px 2.5px 0px #000',
+          borderRadius: '4px',
           display: 'flex',
           alignItems: 'center',
-          justify: 'center',
+          justifyContent: 'center',
         }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <path d={node.iconPath} />
           </svg>
         </div>
 
-        <div>
+        <div style={{ flex: 1 }}>
           <h3 style={{
             fontFamily: 'var(--font-heading)',
             fontSize: '1.25rem',
-            fontWeight: 800,
+            fontWeight: 900,
             color: '#000',
             textTransform: 'uppercase',
-            lineHeight: 1.1,
-            marginBottom: '0.25rem',
+            lineHeight: 1.15,
+            marginBottom: '0.2rem',
+            letterSpacing: '0.02em',
           }}>
             {node.title}
           </h3>
           <p style={{
             fontFamily: 'var(--font-mono)',
-            fontSize: '11px',
+            fontSize: '11.5px',
             color: 'var(--text-muted)',
             lineHeight: 1.45,
+            margin: 0,
           }}>
             {node.desc}
           </p>
@@ -242,18 +228,22 @@ function FlowCard({ node, activeStage, stageIndex, totalIdx }) {
   );
 }
 
-/* Horizontal Flowchart Arrow Connector */
-function ArrowHorizontal({ direction = 'right' }) {
+/* Hand-Drawn Minimalist Inked Downward Arrow matching user reference */
+function HandDrawnArrow() {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', padding: '0 0.25rem' }}>
-      <svg width="36" height="20" viewBox="0 0 36 20" fill="none">
-        <line x1="0" y1="10" x2="30" y2="10" stroke="#000" strokeWidth="2.5" strokeDasharray="4 2" />
-        {direction === 'right' ? (
-          <polygon points="26,4 35,10 26,16" fill="#000" />
-        ) : (
-          <polygon points="10,4 1,10 10,16" fill="#000" />
-        )}
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      margin: '0.35rem 0',
+      userSelect: 'none',
+    }}>
+      <svg width="26" height="46" viewBox="0 0 26 46" fill="none">
+        <path d="M 13 3 L 13 40" stroke="#000000" strokeWidth="2.8" strokeLinecap="round" />
+        <path d="M 5 29 L 13 41 L 21 29" stroke="#000000" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
       </svg>
     </div>
   );
 }
+
+export default ProcessingPipeline;

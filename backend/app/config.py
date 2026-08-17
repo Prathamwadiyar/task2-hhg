@@ -33,10 +33,15 @@ class Settings(BaseSettings):
         default="intfloat/multilingual-e5-small",
         description="Multilingual embedding model name",
     )
-    LLM_API_KEY: Optional[str] = Field(default="", description="LLM provider API key")
+    LLM_API_KEY: Optional[str] = Field(default="", description="Generic LLM provider API key")
+    NVIDIA_API_KEY: Optional[str] = Field(default="", description="NVIDIA API Catalog / NIM key (nvapi-...)")
+    NVIDIA_BASE_URL: str = Field(
+        default="https://integrate.api.nvidia.com/v1",
+        description="NVIDIA NIM base URL",
+    )
     GEMINI_API_KEY: Optional[str] = Field(default="", description="Google Gemini API key")
     OPENAI_API_KEY: Optional[str] = Field(default="", description="OpenAI API key")
-    LLM_MODEL: str = Field(default="gemini-1.5-flash", description="LLM generator model name")
+    LLM_MODEL: str = Field(default="nvidia/llama-3.1-nemotron-70b-instruct", description="LLM generator model name")
 
     # CORS & Security
     FRONTEND_ORIGIN: str = Field(default="http://localhost:3000", description="Frontend allowed origin")

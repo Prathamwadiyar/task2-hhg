@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { queryVoice, queryText } from '../services/api';
+import { queryVoice, queryText, cleanMarkdownToProse } from '../services/api';
 
 const LANGUAGES = [
   { code: 'en-IN', label: 'ENGLISH (INDIA)' },
@@ -8,16 +8,41 @@ const LANGUAGES = [
   { code: 'mr-IN', label: 'MARATHI (मराठी)' },
 ];
 
-const SUGGESTIONS = [
-  'What is a corporation?',
-  'कॉरपोरेशन क्या है?',
-  'Which is capital of india?',
-  'What is Quantum Computing?',
-];
+const SUGGESTIONS_BY_LANG = {
+  'en-IN': [
+    { genre: 'AI & TECH', text: 'What is Retrieval-Augmented Generation (RAG)?', color: 'var(--hh-pink)' },
+    { genre: 'QUANTUM', text: 'How do quantum computers process superposition?', color: 'var(--hh-green)' },
+    { genre: 'GOA HERITAGE', text: 'What is the historical significance of Aguada Fort in Goa?', color: 'var(--hh-yellow)' },
+    { genre: 'ECONOMICS', text: 'How does inflation impact emerging global markets?', color: '#38bdf8' },
+    { genre: 'OCEAN SCIENCE', text: 'What causes bioluminescence in coastal ocean waves?', color: '#a855f7' },
+  ],
+  'hi-IN': [
+    { genre: 'तकनीक', text: 'आर्टिफिशियल इंटेलिजेंस और मशीन लर्निंग में क्या अंतर है?', color: 'var(--hh-pink)' },
+    { genre: 'अंतरिक्ष विज्ञान', text: 'ब्लैक होल कैसे बनते हैं और उनका गुरुत्वाकर्षण कैसा होता है?', color: 'var(--hh-green)' },
+    { genre: 'गोवा धरोहर', text: 'गोवा के प्रमुख ऐतिहासिक किले और सांस्कृतिक धरोहर कौन से हैं?', color: 'var(--hh-yellow)' },
+    { genre: 'अर्थव्यवस्था', text: 'शेयर बाजार में म्यूचुअल फंड कैसे काम करते हैं?', color: '#38bdf8' },
+    { genre: 'पर्यावरण', text: 'समुद्र की लहरों में जैव-संदीप्ति (Bioluminescence) कैसे उत्पन्न होती है?', color: '#a855f7' },
+  ],
+  'kn-IN': [
+    { genre: 'ತಂತ್ರಜ್ಞಾನ', text: 'ಕ್ವಾಂಟಮ್ ಕಂಪ್ಯೂಟಿಂಗ್ ತಂತ್ರಜ್ಞಾನ ಹೇಗೆ ಕೆಲಸ ಮಾಡುತ್ತದೆ?', color: 'var(--hh-pink)' },
+    { genre: 'ಖಗೋಳಶಾಸ್ತ್ರ', text: 'ಸೌರವ್ಯೂಹದಲ್ಲಿ ಅತ್ಯಂತ ದೊಡ್ಡ ಗ್ರಹ ಯಾವುದು ಮತ್ತು ಅದರ ವಿಶೇಷತೆ ಏನು?', color: 'var(--hh-green)' },
+    { genre: 'ಇತಿಹಾಸ', text: 'ವಿಜಯನಗರ ಸಾಮ್ರಾಜ್ಯದ ಇತಿಹಾಸ ಮತ್ತು ವಾಸ್ತುಶಿಲ್ಪದ ಮಹತ್ವವೇನು?', color: 'var(--hh-yellow)' },
+    { genre: 'ಆರ್ಥಿಕತೆ', text: 'ಭಾರತೀಯ ಆರ್ಥಿಕತೆಯಲ್ಲಿ ಡಿಜಿಟಲ್ ಪಾವತಿ ವ್ಯವಸ್ಥೆಯ ಪಾತ್ರವೇನು?', color: '#38bdf8' },
+    { genre: 'ಗೋವಾ ಪ್ರವಾಸೋದ್ಯಮ', text: 'ಗೋವಾದ ಪ್ರಸಿದ್ಧ ಕಡಲತೀರಗಳು ಮತ್ತು ಸಾಂಸ್ಕೃತಿಕ ಆಕರ್ಷಣೆಗಳು ಯಾವುವು?', color: '#a855f7' },
+  ],
+  'mr-IN': [
+    { genre: 'तंत्रज्ञान', text: 'क्लाउड कम्प्यूटिंग म्हणजे काय आणि त्याचे प्रमुख फायदे कोणते?', color: 'var(--hh-pink)' },
+    { genre: 'विज्ञान', text: 'सूर्यमालेतील ग्रहांची निर्मिती कशी झाली आणि त्यांचे प्रकार कोणते?', color: 'var(--hh-green)' },
+    { genre: 'इतिहास', text: 'छत्रपती शिवाजी महाराजांच्या जलदुर्गांचे सामरिक महत्त्व काय होते?', color: 'var(--hh-yellow)' },
+    { genre: 'अर्थशास्त्र', text: 'स्टार्टअप्ससाठी व्हेंचर कॅपिटल आणि एंजल फंडिंग कसे कार्य करते?', color: '#38bdf8' },
+    { genre: 'गोवा वारसा', text: 'गोव्यातील प्राचीन मंदिरे आणि पोर्तुगीज चर्चचा ऐतिहासिक वारसा काय आहे?', color: '#a855f7' },
+  ],
+};
 
 export function VoiceInterface({ result, onResult, onReset, onExplain }) {
   const [stage, setStage] = useState('idle');
   const [language, setLanguage] = useState('en-IN');
+  const [suggestionTab, setSuggestionTab] = useState('ALL');
   const [error, setError] = useState(null);
   const [duration, setDuration] = useState(0);
   const [textQuery, setTextQuery] = useState('');
@@ -172,12 +197,16 @@ export function VoiceInterface({ result, onResult, onReset, onExplain }) {
   }, [language, onResult]);
 
   /* ---- Submit Text Query ---- */
-  const submitQuery = useCallback(async (queryStr) => {
+  const submitQuery = useCallback(async (queryStr, overrideLang) => {
     if (!queryStr.trim()) return;
+    const targetLang = overrideLang || language;
+    if (overrideLang && overrideLang !== language) {
+      setLanguage(overrideLang);
+    }
     setError(null);
     setStage('retrieving');
     try {
-      const isoLang = language.split('-')[0].toLowerCase();
+      const isoLang = targetLang.split('-')[0].toLowerCase();
       const resultRes = await queryText(queryStr.trim(), isoLang);
       setStage('complete');
       onResult(resultRes);
@@ -272,9 +301,13 @@ export function VoiceInterface({ result, onResult, onReset, onExplain }) {
                   </div>
                 </div>
 
-                <p style={{ fontSize: '1.05rem', lineHeight: 1.8, color: '#000', fontWeight: 500, margin: 0 }}>
-                  {result.answer}
-                </p>
+                <div style={{ fontSize: '1.05rem', lineHeight: 1.8, color: '#000', fontWeight: 500, margin: 0 }}>
+                  {(cleanMarkdownToProse(result.answer) || '').split('\n\n').map((para, idx, arr) => (
+                    <p key={idx} style={{ marginBottom: idx < arr.length - 1 ? '1.1rem' : 0 }}>
+                      {para}
+                    </p>
+                  ))}
+                </div>
               </div>
 
               {/* 3. Bottom Action Buttons Bar */}
@@ -416,30 +449,113 @@ export function VoiceInterface({ result, onResult, onReset, onExplain }) {
                 </button>
               </form>
 
-              {/* 4. Quick Suggestion Chips */}
-              <div style={{ marginTop: '1.5rem', textAlign: 'left' }}>
-                <div className="text-mono" style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 700, marginBottom: '0.5rem' }}>
-                  SUGGESTED QUESTIONS:
+              {/* 4. Quick Multilingual Suggestion Chips by Genre */}
+              <div style={{ marginTop: '1.75rem', textAlign: 'left' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                  <div className="text-mono" style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 800, letterSpacing: '0.05em' }}>
+                    SUGGESTED QUESTIONS BY GENRE:
+                  </div>
+
+                  {/* Mini Language Filter Pills */}
+                  <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                    {[
+                      { code: 'ALL', label: 'ALL LANGUAGES' },
+                      { code: 'en-IN', label: 'ENG' },
+                      { code: 'hi-IN', label: 'हिंदी' },
+                      { code: 'kn-IN', label: 'ಕನ್ನಡ' },
+                      { code: 'mr-IN', label: 'मराठी' },
+                    ].map((tab) => (
+                      <button
+                        key={tab.code}
+                        type="button"
+                        onClick={() => setSuggestionTab(tab.code)}
+                        style={{
+                          padding: '0.15rem 0.5rem',
+                          background: suggestionTab === tab.code ? '#000' : 'var(--hh-gray-light)',
+                          color: suggestionTab === tab.code ? 'var(--hh-yellow)' : '#000',
+                          border: '1.5px solid #000',
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: '10px',
+                          fontWeight: 800,
+                          cursor: 'pointer',
+                          borderRadius: '3px',
+                          transition: 'all 0.15s ease',
+                        }}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  {SUGGESTIONS.map((q, idx) => (
+
+                {/* Multilingual Suggestion Chips */}
+                <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+                  {(suggestionTab === 'ALL'
+                    ? [
+                        { ...SUGGESTIONS_BY_LANG['en-IN'][0], lang: 'EN', langCode: 'en-IN' },
+                        { ...SUGGESTIONS_BY_LANG['hi-IN'][0], lang: 'HI', langCode: 'hi-IN' },
+                        { ...SUGGESTIONS_BY_LANG['kn-IN'][0], lang: 'KN', langCode: 'kn-IN' },
+                        { ...SUGGESTIONS_BY_LANG['mr-IN'][0], lang: 'MR', langCode: 'mr-IN' },
+                        { ...SUGGESTIONS_BY_LANG['en-IN'][2], lang: 'EN', langCode: 'en-IN' },
+                        { ...SUGGESTIONS_BY_LANG['hi-IN'][1], lang: 'HI', langCode: 'hi-IN' },
+                        { ...SUGGESTIONS_BY_LANG['kn-IN'][2], lang: 'KN', langCode: 'kn-IN' },
+                        { ...SUGGESTIONS_BY_LANG['mr-IN'][2], lang: 'MR', langCode: 'mr-IN' },
+                      ]
+                    : (SUGGESTIONS_BY_LANG[suggestionTab] || []).map((item) => ({
+                        ...item,
+                        lang: suggestionTab.split('-')[0].toUpperCase(),
+                        langCode: suggestionTab,
+                      }))
+                  ).map((item, idx) => (
                     <button
                       key={idx}
-                      onClick={() => { setTextQuery(q); submitQuery(q); }}
+                      type="button"
+                      onClick={() => {
+                        setTextQuery(item.text);
+                        submitQuery(item.text, item.langCode);
+                      }}
                       disabled={isProcessing}
                       style={{
-                        padding: '0.35rem 0.75rem',
-                        background: 'var(--hh-gray-light)',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.45rem',
+                        padding: '0.4rem 0.8rem',
+                        background: 'var(--hh-white)',
                         border: '1.5px solid #000',
+                        boxShadow: '2px 2px 0px #000',
                         color: '#000',
                         fontFamily: 'var(--font-mono)',
-                        fontSize: '11px',
+                        fontSize: '11.5px',
                         fontWeight: 700,
                         cursor: 'pointer',
-                        transition: 'all 0.15s ease',
+                        borderRadius: '4px',
+                        transition: 'transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s ease, background 0.15s ease',
+                        textAlign: 'left',
+                        lineHeight: 1.3,
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '4px 4px 0px #000';
+                        e.currentTarget.style.background = 'var(--hh-yellow)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0px)';
+                        e.currentTarget.style.boxShadow = '2px 2px 0px #000';
+                        e.currentTarget.style.background = 'var(--hh-white)';
                       }}
                     >
-                      "{q}"
+                      <span style={{
+                        fontSize: '9px',
+                        fontWeight: 900,
+                        background: '#000',
+                        color: item.color || 'var(--hh-yellow)',
+                        padding: '0.1rem 0.35rem',
+                        borderRadius: '2px',
+                        letterSpacing: '0.04em',
+                      }}>
+                        {item.genre}
+                      </span>
+                      <span>"{item.text}"</span>
                     </button>
                   ))}
                 </div>

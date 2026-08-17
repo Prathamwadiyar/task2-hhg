@@ -29,8 +29,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
 @app.middleware("http")
 async def request_context_middleware(request: Request, call_next):
     """Middleware for assigning Request IDs, initializing StageTimer, and logging request flow."""
