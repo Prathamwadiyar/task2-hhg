@@ -160,12 +160,19 @@ class GroundedLLMGenerator:
                 import google.generativeai as genai
                 genai.configure(api_key=self.gemini_api_key)
                 
-                candidate_models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-flash-latest"]
-                cfg = genai.GenerationConfig(max_output_tokens=1024, temperature=0.2)
+                candidate_models = [
+                    "gemini-3.6-flash",
+                    "gemini-3.7-flash",
+                    "gemini-3.5-flash",
+                    "gemini-flash-latest",
+                    "gemini-3.1-flash-lite",
+                    "gemini-3-flash-preview",
+                ]
+                cfg = genai.GenerationConfig(max_output_tokens=1024, temperature=0.25)
                 for model_name in candidate_models:
                     try:
                         model = genai.GenerativeModel(model_name)
-                        prompt = f"{SYSTEM_GROUNDING_PROMPT}\n\nRetrieved Context:\n{context_str}\n\nUser Query: {query}"
+                        prompt = f"{SYSTEM_GROUNDING_PROMPT}\n\nRetrieved Context:\n{context_str}\n\nUser Query: {query}\n\nExplain the question thoroughly in 2 to 3 well-structured, informative paragraphs (decent length, neither too brief nor overly long):"
                         response = model.generate_content(prompt, generation_config=cfg)
                         if response and response.text:
                             return clean_prose_output(response.text.strip())
